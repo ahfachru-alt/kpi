@@ -1,0 +1,71 @@
+<?php include BASE_PATH . '/views/layouts/header.php'; ?>
+<div class="layout">
+    <?php include BASE_PATH . '/views/layouts/sidebar-user.php'; ?>
+    <section class="content">
+        <h2>Peta</h2>
+        <div class="legend">
+            <button class="badge green" onclick="filterStatus('online')">Online</button>
+            <button class="badge red" onclick="filterStatus('offline')">Offline</button>
+            <button class="badge yellow" onclick="filterStatus('maintenance')">Maintenance</button>
+            <button class="badge" onclick="filterStatus('all')">Semua</button>
+        </div>
+        <input id="search" placeholder="Cari gedung..." oninput="searchBuilding(this.value)" />
+        <select id="buildingFilter" onchange="filterBuilding(this.value)">
+            <option value="">Semua gedung</option>
+            <?php foreach ($buildings as $b): ?>
+                <option value="<?= $b['id'] ?>"><?= htmlspecialchars($b['name']) ?></option>
+            <?php endforeach; ?>
+        </select>
+        <div id="map" style="height: 70vh"></div>
+        <script>
+            const map = L.map('map').setView([-6.3643, 108.4376], 15);
+            const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+            const sat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { subdomains:['mt0','mt1','mt2','mt3'] });
+            L.control.layers({ 'OSM': osm, 'Satelit': sat }).addTo(map);
+
+            const buildingLayer = L.layerGroup().addTo(map);
+            const cctvLayer = L.layerGroup().addTo(map);
+            const buildings = <?= json_encode($buildings) ?>;
+            const rooms = <?= json_encode($rooms) ?>;
+            const cctvs = <?= json_encode($cctvs) ?>;
+
+            const colorByStatus = s => s==='online'?'green':(s==='offline'?'red':'orange');
+            let currentFilter = 'all';
+
+            function renderMarkers() {
+                cctvLayer.clearLayers();
+                buildingLayer.clearLayers();
+                buildings.forEach(b => {
+                    if (b.lat && b.lng) {
+                        L.marker([parseFloat(b.lat), parseFloat(b.lng)])
+                          .bindPopup(`<strong>${b.name}</strong>`)
+                          .addTo(buildingLayer);
+                    }
+                });
+                cctvs.forEach(c => {
+                    if (currentFilter !== 'all' && c.status !== currentFilter) return;
+                    if (currentBuilding && String(c.building_id) !== String(currentBuilding)) return;
+                    if (c.lat && c.lng) {
+                        L.circleMarker([parseFloat(c.lat), parseFloat(c.lng)], { radius: 7, color: colorByStatus(c.status) })
+                            .bindPopup(`<strong>${c.room_name||''}</strong><br>${c.ip_address}<br>${c.stream_url?`<a href='player.php?src=${encodeURIComponent(c.stream_url)}' target='_blank'>Live</a>`:''}`)
+                            .addTo(cctvLayer);
+                    }
+                });
+            }
+            renderMarkers();
+
+            window.filterStatus = (s) => { currentFilter = s; renderMarkers(); };
+            window.searchBuilding = (q) => {
+                q = (q||'').toLowerCase();
+                const found = buildings.find(b => (b.name||'').toLowerCase().includes(q));
+                if (found && found.lat && found.lng) {
+                    map.setView([parseFloat(found.lat), parseFloat(found.lng)], 17);
+                }
+            }
+            let currentBuilding = '';
+            window.filterBuilding = (id) => { currentBuilding = id || ''; renderMarkers(); };
+        </script>
+    </section>
+</div>
+<?php include BASE_PATH . '/views/layouts/footer.php'; ?>
+

@@ -1,0 +1,9 @@
+{
+  "name": "ruvi/monitoring-cctv",
+  "description": "Monitoring CCTV RU VI Balongan (Native PHP MVC)",
+  "require": {
+    "phpmailer/phpmailer": "^6.8",
+    "phpoffice/phpspreadsheet": "^1.29"
+  }
+}
+
