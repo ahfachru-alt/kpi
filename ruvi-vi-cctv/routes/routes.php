@@ -51,7 +51,14 @@ return [
             $row = $stmt->fetch();
             if ($row) {
                 $ip = $row['ip_address'];
-                header('Location: ' . base_url('api/ffmpeg.php?rtsp=' . urlencode($ip))); exit;
+                // Trigger ffmpeg
+                @file_get_contents(base_url('api/ffmpeg.php?rtsp=' . urlencode($ip)));
+                // Compute output filename and save stream_url
+                $host = parse_url($ip, PHP_URL_HOST) ?: '';
+                $safe = preg_replace('/[^0-9\.]/','_', $host);
+                $stream = '/live/' . $safe . '.m3u8';
+                $upd = db()->prepare('UPDATE cctvs SET stream_url=? WHERE id=?');
+                $upd->execute([$stream, $id]);
             }
         }
         header('Location: ' . base_url('admin/cctvs')); exit;
