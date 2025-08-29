@@ -16,7 +16,16 @@
             <?php foreach ($rows as $r): ?>
                 <tr>
                     <td><?= $r['id'] ?></td>
-                    <td><?= htmlspecialchars($r['name']) ?></td>
+                    <td>
+                        <form method="post" action="<?= base_url('admin/buildings/update') ?>" class="grid" style="grid-template-columns:1fr 1fr 1fr auto;gap:6px">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                            <input name="name" value="<?= htmlspecialchars($r['name']) ?>">
+                            <input name="lat" value="<?= htmlspecialchars($r['lat']) ?>">
+                            <input name="lng" value="<?= htmlspecialchars($r['lng']) ?>">
+                            <button class="btn">Save</button>
+                        </form>
+                    </td>
                     <td><?= htmlspecialchars($r['lat']) ?></td>
                     <td><?= htmlspecialchars($r['lng']) ?></td>
                     <td>

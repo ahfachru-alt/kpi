@@ -20,7 +20,19 @@
             <?php foreach ($rows as $r): ?>
                 <tr>
                     <td><?= $r['id'] ?></td>
-                    <td><?= htmlspecialchars($r['building_name']) ?></td>
+                    <td>
+                        <form method="post" action="<?= base_url('admin/rooms/update') ?>" class="grid" style="grid-template-columns:1fr 1fr auto;gap:6px">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                            <select name="building_id">
+                                <?php foreach ($buildings as $b): ?>
+                                    <option value="<?= $b['id'] ?>" <?= $b['name']===$r['building_name']?'selected':'' ?>><?= htmlspecialchars($b['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <input name="name" value="<?= htmlspecialchars($r['name']) ?>">
+                            <button class="btn">Save</button>
+                        </form>
+                    </td>
                     <td><?= htmlspecialchars($r['name']) ?></td>
                     <td>
                         <form method="post" action="<?= base_url('admin/rooms/delete') ?>" onsubmit="return confirm('Hapus?')">
