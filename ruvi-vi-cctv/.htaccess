@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Route all requests to public/index.php
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]
+
+# Inside public folder, rewrite to index.php if file/folder not found
+RewriteRule ^public/(.*)$ public/index.php [L]
+
