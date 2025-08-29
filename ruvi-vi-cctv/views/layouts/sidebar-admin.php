@@ -22,6 +22,8 @@
         <a href="<?= base_url('admin/messages') ?>">Message</a>
         <h6>Theme</h6>
         <span>Appearance: via headbar</span>
+        <h6>Profile</h6>
+        <a href="<?= base_url('admin/profile') ?>">Profile</a>
     </nav>
     <div class="profile">
         <div><?= htmlspecialchars($_SESSION['user']['name'] ?? '') ?></div>

@@ -60,6 +60,7 @@ return [
     'GET /admin/maps' => 'MapsController@admin',
     'GET /admin/notifications' => 'NotificationController@admin',
     'GET /admin/messages' => 'MessageController@admin',
+    'GET /admin/profile' => 'ProfileController@admin',
     'GET /admin/contacts' => 'ContactController@admin',
     'POST /admin/contacts/create' => 'ContactController@create',
     'POST /admin/contacts/update' => 'ContactController@update',
@@ -78,6 +79,7 @@ return [
     'GET /user/cctvs' => 'UserController@cctvs',
     'GET /user/notifications' => 'NotificationController@user',
     'GET /user/messages' => 'MessageController@user',
+    'GET /user/profile' => 'ProfileController@user',
     'GET /user/contact' => 'ContactController@user',
     'POST /messages/send' => function () {
         require_auth();
@@ -93,5 +95,8 @@ return [
         }
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? base_url())); exit;
     },
+    // Profile update endpoints
+    'POST /profile/update' => 'ProfileController@update',
+    'POST /profile/password' => 'ProfileController@password',
 ];
 

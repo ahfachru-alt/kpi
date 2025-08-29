@@ -10,6 +10,7 @@
         <a href="#">Contact</a>
         <a href="<?= base_url('user/notifications') ?>">Notification</a>
         <a href="<?= base_url('user/messages') ?>">Message</a>
+        <a href="<?= base_url('user/profile') ?>">Profile</a>
     </nav>
     <div class="profile">
         <div><?= htmlspecialchars($_SESSION['user']['name'] ?? '') ?></div>
