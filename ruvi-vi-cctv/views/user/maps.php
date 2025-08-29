@@ -10,6 +10,12 @@
             <button class="badge" onclick="filterStatus('all')">Semua</button>
         </div>
         <input id="search" placeholder="Cari gedung..." oninput="searchBuilding(this.value)" />
+        <select id="buildingFilter" onchange="filterBuilding(this.value)">
+            <option value="">Semua gedung</option>
+            <?php foreach ($buildings as $b): ?>
+                <option value="<?= $b['id'] ?>"><?= htmlspecialchars($b['name']) ?></option>
+            <?php endforeach; ?>
+        </select>
         <div id="map" style="height: 70vh"></div>
         <script>
             const map = L.map('map').setView([-6.3643, 108.4376], 15);
@@ -17,6 +23,7 @@
             const sat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { subdomains:['mt0','mt1','mt2','mt3'] });
             L.control.layers({ 'OSM': osm, 'Satelit': sat }).addTo(map);
 
+            const buildingLayer = L.layerGroup().addTo(map);
             const cctvLayer = L.layerGroup().addTo(map);
             const buildings = <?= json_encode($buildings) ?>;
             const rooms = <?= json_encode($rooms) ?>;
@@ -27,8 +34,17 @@
 
             function renderMarkers() {
                 cctvLayer.clearLayers();
+                buildingLayer.clearLayers();
+                buildings.forEach(b => {
+                    if (b.lat && b.lng) {
+                        L.marker([parseFloat(b.lat), parseFloat(b.lng)])
+                          .bindPopup(`<strong>${b.name}</strong>`)
+                          .addTo(buildingLayer);
+                    }
+                });
                 cctvs.forEach(c => {
                     if (currentFilter !== 'all' && c.status !== currentFilter) return;
+                    if (currentBuilding && String(c.building_id) !== String(currentBuilding)) return;
                     if (c.lat && c.lng) {
                         L.circleMarker([parseFloat(c.lat), parseFloat(c.lng)], { radius: 7, color: colorByStatus(c.status) })
                             .bindPopup(`<strong>${c.room_name||''}</strong><br>${c.ip_address}<br>${c.stream_url?`<a href='player.php?src=${encodeURIComponent(c.stream_url)}' target='_blank'>Live</a>`:''}`)
@@ -46,6 +62,8 @@
                     map.setView([parseFloat(found.lat), parseFloat(found.lng)], 17);
                 }
             }
+            let currentBuilding = '';
+            window.filterBuilding = (id) => { currentBuilding = id || ''; renderMarkers(); };
         </script>
     </section>
 </div>

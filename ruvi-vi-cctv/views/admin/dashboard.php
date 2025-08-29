@@ -5,6 +5,7 @@
         <h2>Dashboard Admin</h2>
         <div class="cards">
             <div class="card">Users: <strong><?= $stats['users_total'] ?></strong></div>
+            <div class="card">Users Online: <strong><?= $stats['users_online'] ?></strong></div>
             <div class="card">Gedung: <strong><?= $stats['buildings_total'] ?></strong></div>
             <div class="card">Ruangan: <strong><?= $stats['rooms_total'] ?></strong></div>
             <div class="card">CCTV: <strong><?= $stats['cctvs_total'] ?></strong></div>

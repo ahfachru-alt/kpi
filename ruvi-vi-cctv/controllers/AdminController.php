@@ -18,6 +18,8 @@ class AdminController {
             'cctv_offline' => (int)db()->query("SELECT COUNT(*) AS c FROM cctvs WHERE status='offline'")->fetch()['c'],
             'cctv_maintenance' => (int)db()->query("SELECT COUNT(*) AS c FROM cctvs WHERE status='maintenance'")->fetch()['c'],
         ];
+        // Online activity: last activity in 10 minutes indicates online
+        $stats['users_online'] = (int)db()->query("SELECT COUNT(*) AS c FROM notifications WHERE title='Login Berhasil' AND created_at >= (NOW() - INTERVAL 10 MINUTE)")->fetch()['c'];
         return $this->render('admin/dashboard', ['title' => 'Admin Dashboard', 'stats' => $stats]);
     }
 
