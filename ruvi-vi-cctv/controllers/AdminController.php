@@ -19,8 +19,45 @@ class AdminController {
             'cctv_maintenance' => (int)db()->query("SELECT COUNT(*) AS c FROM cctvs WHERE status='maintenance'")->fetch()['c'],
         ];
         // Online activity: last activity in 10 minutes indicates online
-        $stats['users_online'] = (int)db()->query("SELECT COUNT(*) AS c FROM notifications WHERE title='Login Berhasil' AND created_at >= (NOW() - INTERVAL 10 MINUTE)")->fetch()['c'];
+        $stats['users_online'] = (int)db()->query("SELECT COUNT(*) AS c FROM users WHERE last_seen >= (NOW() - INTERVAL 5 MINUTE)")->fetch()['c'];
         return $this->render('admin/dashboard', ['title' => 'Admin Dashboard', 'stats' => $stats]);
+    }
+
+    public function exportAnalytics(): void {
+        require_admin();
+        $format = strtolower(trim($_GET['format'] ?? 'csv'));
+        $rows = db()->query("SELECT id, name, email, role, IF(last_seen >= (NOW() - INTERVAL 5 MINUTE), 'online', 'offline') AS status, last_seen FROM users ORDER BY name")->fetchAll();
+        if ($format === 'xlsx') {
+            $autoload = BASE_PATH . '/vendor/autoload.php';
+            if (is_file($autoload)) {
+                require_once $autoload;
+                if (class_exists('PhpOffice\\PhpSpreadsheet\\Spreadsheet')) {
+                    $spreadsheet = new PhpOffice\PhpSpreadsheet\Spreadsheet();
+                    $sheet = $spreadsheet->getActiveSheet();
+                    $headers = ['ID','Name','Email','Role','Status','Last Seen'];
+                    $col = 1; foreach ($headers as $h) { $sheet->setCellValueByColumnAndRow($col++, 1, $h); }
+                    $rowNum = 2;
+                    foreach ($rows as $r) {
+                        $col = 1;
+                        foreach (['id','name','email','role','status','last_seen'] as $k) { $sheet->setCellValueByColumnAndRow($col++, $rowNum, $r[$k]); }
+                        $rowNum++;
+                    }
+                    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                    header('Content-Disposition: attachment; filename="analytics.xlsx"');
+                    $writer = new PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                    $writer->save('php://output');
+                    exit;
+                }
+            }
+            // fallback to CSV if library missing
+        }
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="analytics.csv"');
+        $out = fopen('php://output', 'w');
+        fputcsv($out, ['ID','Name','Email','Role','Status','Last Seen']);
+        foreach ($rows as $r) { fputcsv($out, $r); }
+        fclose($out);
+        exit;
     }
 
     public function users(): string {

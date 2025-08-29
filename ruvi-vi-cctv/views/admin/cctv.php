@@ -42,6 +42,17 @@
                             <input type="hidden" name="id" value="<?= $r['id'] ?>">
                             <button class="btn">Start Stream</button>
                         </form>
+                        <form method="post" action="<?= base_url('admin/cctvs/update') ?>" style="display:inline-block">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                            <input type="hidden" name="room_id" value="<?= $r['room_id'] ?>">
+                            <input type="hidden" name="ip_address" value="<?= htmlspecialchars($r['ip_address']) ?>">
+                            <input type="hidden" name="status" value="<?= htmlspecialchars($r['status']) ?>">
+                            <input type="hidden" name="stream_url" value="<?= htmlspecialchars($r['stream_url']) ?>">
+                            <input type="hidden" name="lat" value="<?= htmlspecialchars($r['lat'] ?? '') ?>">
+                            <input type="hidden" name="lng" value="<?= htmlspecialchars($r['lng'] ?? '') ?>">
+                            <button class="btn">Save</button>
+                        </form>
                         <form method="post" action="<?= base_url('admin/cctvs/delete') ?>" onsubmit="return confirm('Hapus?')" style="display:inline-block">
                             <?= csrf_field() ?>
                             <input type="hidden" name="id" value="<?= $r['id'] ?>">

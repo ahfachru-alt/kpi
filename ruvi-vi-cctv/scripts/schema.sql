@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   role ENUM('admin','user') NOT NULL DEFAULT 'user',
   verified TINYINT(1) NOT NULL DEFAULT 0,
-  theme ENUM('system','light','dark') NOT NULL DEFAULT 'system'
+  theme ENUM('system','light','dark') NOT NULL DEFAULT 'system',
+  last_seen DATETIME NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS contacts (

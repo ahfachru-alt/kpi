@@ -68,6 +68,7 @@ return [
     'GET /admin/export/contacts' => 'ContactController@export',
 
     'GET /admin/export/users' => 'AdminController@exportUsers',
+    'GET /admin/export/analytics' => 'AdminController@exportAnalytics',
     'GET /admin/export/buildings' => 'BuildingController@export',
     'GET /admin/export/rooms' => 'RoomController@export',
     'GET /admin/export/cctvs' => 'CctvController@export',

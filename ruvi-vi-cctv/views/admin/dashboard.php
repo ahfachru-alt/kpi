@@ -16,6 +16,10 @@
             <div class="card yellow">CCTV Maintenance: <strong><?= $stats['cctv_maintenance'] ?></strong></div>
         </div>
         <a class="btn primary" href="<?= base_url('admin/export/cctvs') ?>">Export CCTV (CSV)</a>
+        <div style="margin-top:10px">
+            <a class="btn" href="<?= base_url('admin/export/analytics') ?>">Export Analytics (CSV)</a>
+            <a class="btn" href="<?= base_url('admin/export/analytics?format=xlsx') ?>">Export Analytics (XLSX)</a>
+        </div>
     </section>
 </div>
 <?php include BASE_PATH . '/views/layouts/footer.php'; ?>

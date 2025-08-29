@@ -64,6 +64,17 @@ function require_admin(): void {
     if (!is_admin()) { http_response_code(403); exit('Forbidden'); }
 }
 
+// Update last_seen (~1/min)
+if (auth_user()) {
+    $now = time();
+    $lastTick = $_SESSION['last_seen_tick'] ?? 0;
+    if ($now - (int)$lastTick >= 60) {
+        $_SESSION['last_seen_tick'] = $now;
+        $stmt = db()->prepare('UPDATE users SET last_seen=NOW() WHERE id=?');
+        $stmt->execute([(int)$_SESSION['user']['id']]);
+    }
+}
+
 // Routing
 $routes = require BASE_PATH . '/routes/routes.php';
 
